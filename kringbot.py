@@ -104,7 +104,7 @@ async def ask(ctx, question: str):
     special_responses = load_special_responses()
 
     for pattern, response in special_responses.items():
-        if pattern in question_lower:
+        if pattern in question:
             response = response.replace("{user}", ctx.author.display_name)
             await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
             return  # Skip the rest — we already responded

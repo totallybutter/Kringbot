@@ -1,19 +1,18 @@
-[yesno]
-should
-will
-can
-am i
-is it
-does
-are
-have
-
 [timing]
 when
 how long
 soon
 before
 after
+
+[yesno]
+should
+will
+can
+is it
+does
+are
+have
 
 [identity]
 who

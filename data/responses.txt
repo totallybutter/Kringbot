@@ -1,26 +1,31 @@
 [yesno]
-Absolutely.
-No way.
-It's possible.
-You already know the answer.
+absolutely
+nope
+anything's possible
+the answer is shleeping more
+umu
+^w^
 
 [timing]
-Very soon.
-Not in this lifetime.
-Give it a few days.
-Timing is unclear.
+very soon
+maybe on kringday
+tomorrow
+next year
+next month
+next week
 
 [identity]
-You’ll know when it’s time.
-Someone unexpected.
-The one you least expect.
+the one you least expect
+probably someone's smurf
+a spy amongus
 
 [why]
-Because it was meant to be.
-Even I don't know that.
-Ask again with more clarity.
+because it was meant to be
+
+[love]
+go for it!
 
 [general]
-Interesting question.
-Focus and ask again.
-I sense uncertainty.
+ask me again later
+interesting question!
+ask godgab
