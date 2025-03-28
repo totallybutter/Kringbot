@@ -1,0 +1,26 @@
+[yesno]
+Absolutely.
+No way.
+It's possible.
+You already know the answer.
+
+[timing]
+Very soon.
+Not in this lifetime.
+Give it a few days.
+Timing is unclear.
+
+[identity]
+You’ll know when it’s time.
+Someone unexpected.
+The one you least expect.
+
+[why]
+Because it was meant to be.
+Even I don't know that.
+Ask again with more clarity.
+
+[general]
+Interesting question.
+Focus and ask again.
+I sense uncertainty.

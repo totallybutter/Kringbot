@@ -1,0 +1,42 @@
+[yesno]
+should
+will
+can
+am i
+is it
+does
+are
+have
+
+[timing]
+when
+how long
+soon
+before
+after
+
+[identity]
+who
+name
+which person
+them
+they
+
+[why]
+why
+reason
+how come
+explain
+
+[self]
+am i
+was i
+will i
+do i
+
+[love]
+love
+crush
+date
+feelings
+marry
