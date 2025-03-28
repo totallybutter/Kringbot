@@ -21,11 +21,9 @@ DATA_FOLDER = "data"
 async def on_ready():
     print(f"{bot.user} is ready and online!")
 
-
 @bot.slash_command(name="hello", description="Say hello to the bot")
 async def hello(ctx: discord.ApplicationContext):
     await ctx.respond("^ w^ Hewwo!")
-
 
 @bot.slash_command(name="about",description="Show bot info and list of available commands.")
 async def about(ctx: discord.ApplicationContext):
@@ -137,7 +135,7 @@ def get_image_paths():
         image_paths.extend(glob.glob(os.path.join(IMAGE_FOLDER, ext)))
     return image_paths
 image_cooldowns = {}  # Dict to track last use time per user (user_id: timestamp)
-COOLDOWN_SECONDS = 60 * 60 * 24
+COOLDOWN_SECONDS = 60 * 60 * 12
 @bot.slash_command(name="daily-kringles", description="Get your daily kringle image!")
 async def daily_image(ctx):
     user_id = ctx.author.id
