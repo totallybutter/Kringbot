@@ -6,7 +6,9 @@ import glob
 import time
 import datetime
 import collections
-import ask_utils 
+import ask_utils
+import gsheet_utils
+import gimg_utils
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord import option
@@ -20,11 +22,13 @@ DATA_FOLDER = "data"
 
 @bot.event
 async def on_ready():
+    gsheet_utils.load_sheet_cache()
     print(f"{bot.user} is ready and online!")
 
 @bot.slash_command(name="hello", description="Say hello to the bot")
 async def hello(ctx: discord.ApplicationContext):
     await ctx.respond("^ w^ Hewwo!")
+
 
 @bot.slash_command(name="about",description="Show bot info and list of available commands.")
 async def about(ctx: discord.ApplicationContext):
@@ -32,24 +36,49 @@ async def about(ctx: discord.ApplicationContext):
         f"Bot name: {bot.user.name}\n"
         "- `/about`: Show bot info.\n"
         "- `/ask <question>`: Ask the bot a question.\n"
-        "- `/daily-kringles`: Get your personalised daily kringle image"
+        "- `/refresh-ask`: Refreshes the bots response cache."
+        "- `/daily-kringles`: Get your personalised daily kringle image.\n"
     )
     await ctx.respond(info_text)
+
+refresh_cooldown = 0
+REFRESH_COOLDOWN_SECONDS = 120
+@bot.slash_command(name="refresh-ask", description="Recache the responses from online")
+async def refresh_cache(ctx:discord.ApplicationContext):
+    now = time.time()
+    last_used = refresh_cooldown
+    time_since_last = now - last_used
+    time_left = REFRESH_COOLDOWN_SECONDS - time_since_last
+    if time_since_last > REFRESH_COOLDOWN_SECONDS:
+        gsheet_utils.load_sheet_cache()
+        await ctx.respond("📝 Refreshed response cache!")
+    else:
+        hours = int(time_left // 3600)
+        minutes = int((time_left % 3600) // 60)
+        seconds = int(time_left % 60)
+        await ctx.respond("⏳ A refresh was done recently! Try again in {hours}h {minutes}m {seconds}s.")
+
+
 
 @bot.slash_command(description="Ask Kringbot a question.")
 @option("question", description="Type your question", required=True)
 async def ask(ctx, question: str):
     question = question.lower()
+     
+    category_keywords = gsheet_utils._sheet_cache["categories"]
+    responses_by_category = gsheet_utils._sheet_cache["responses"]
+    special_responses = gsheet_utils._sheet_cache["specials"]
 
-    category_keywords = ask_utils.load_categories()
-    responses_by_category = ask_utils.load_responses()
-    special_responses = ask_utils.load_special_responses()
-
-    if question.strip() in special_responses:
-        # This ensures only exact matches trigger the response
-        response = special_responses[question.strip()].replace("{user}", ctx.author.display_name)
-        await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
+    if not category_keywords or not responses_by_category:
+        await ctx.respond("⚠️ UmU I couldn't load my response data. Try `/refresh-ask` or contact the dev.")
         return
+
+    if special_responses:
+        if question.strip() in special_responses:
+            # This ensures only exact matches trigger the response
+            response = special_responses[question.strip()].replace("{user}", ctx.author.display_name)
+            await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
+            return
 
     category = ask_utils.categorize_question(question, category_keywords)
     responses = responses_by_category.get(category, responses_by_category["general"])
@@ -70,25 +99,19 @@ async def ask(ctx, question: str):
     response = response.replace("{user}", ctx.author.display_name)
     await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
 
-
-IMAGE_FOLDER = DATA_FOLDER + "/images"
-def get_image_paths():
-    extensions = ("*.png", "*.jpg", "*.jpeg", "*.gif")
-    image_paths = []
-    for ext in extensions:
-        image_paths.extend(glob.glob(os.path.join(IMAGE_FOLDER, ext)))
-    return image_paths
 image_cooldowns = {}  # Dict to track last use time per user (user_id: timestamp)
+DAILY_FOLDER_NAME = os.getenv("DAILY_IMAGE_FOLDER_ID")  # Optional override
 COOLDOWN_SECONDS = 60 * 60 * 12
 @bot.slash_command(name="daily-kringles", description="Get your daily kringle image!")
 async def daily_image(ctx):
     user_id = ctx.author.id
     now = time.time()
 
-     # Check if user is on cooldown
+    # Cooldown check
     last_used = image_cooldowns.get(user_id, 0)
     time_since_last = now - last_used
     time_left = COOLDOWN_SECONDS - time_since_last
+
     if time_since_last < COOLDOWN_SECONDS:
         hours = int(time_left // 3600)
         minutes = int((time_left % 3600) // 60)
@@ -96,14 +119,16 @@ async def daily_image(ctx):
         await ctx.respond(f"⏳ You've already received your image of the day! Try again in {hours}h {minutes}m {seconds}s.")
         return
     
-    image_paths = get_image_paths()
-    if not image_paths:
-        await ctx.respond("No images found in the folder.")
+    # Get image from Google Drive folder
+    image_url = gimg_utils.get_random_image_url(DAILY_FOLDER_NAME)
+    if not image_url:
+        await ctx.respond("⚠️ UmU Could not find images in the daily folder. Try contacting the dev.")
         return
 
-    image = random.choice(image_paths)
-    image_cooldowns[user_id] = now  # Update timestamp
+    image_cooldowns[user_id] = now  # Save the time
+    embed = discord.Embed(title="🖼️ Here's your image of the day!")
+    embed.set_image(url=image_url)
 
-    await ctx.respond("🖼️ Here's your image of the day!", file=discord.File(image))
+    await ctx.respond(embed=embed)
 
 bot.run(os.getenv("DISCORD_BOT_TOKEN")) # run the bot with the token

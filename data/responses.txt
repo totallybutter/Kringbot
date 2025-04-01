@@ -5,6 +5,7 @@ anything's possible
 the answer is shleeping more
 umu
 ^w^
+sniff snoof
 
 [timing]
 very soon
@@ -14,6 +15,8 @@ next year
 next month
 next week
 not sure of the exact time, {user}, but i'm sure it won’t be long now!
+shleep time!
+sniff snoof time
 
 [identity]
 the one you least expect
@@ -32,8 +35,12 @@ well, {user}, only you can truly answer that for yourself!
 who you are {user}, is up to you to decide!
 absolutely, you can do it if you believe in yourself!
 
-[love]
-go for it!
+[position]
+the comfwy bed
+kringland
+dreamland
+a kringland full of kringles
+sniff snoof
 
 [general]
 ask me again later

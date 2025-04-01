@@ -5,54 +5,54 @@ from collections import defaultdict
 load_dotenv()
 DATA_FOLDER = "data"
 
-CATEGORY_FILE = DATA_FOLDER + "/categories.txt"
-def load_categories(filepath=CATEGORY_FILE) -> dict:
-    category_keywords = defaultdict(list)
-    current_category = None
+# CATEGORY_FILE = DATA_FOLDER + "/categories.txt"
+# def load_categories(filepath=CATEGORY_FILE) -> dict:
+#     category_keywords = defaultdict(list)
+#     current_category = None
 
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):  # skip comments or blank lines
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                current_category = line[1:-1].lower()
-            elif current_category:
-                category_keywords[current_category].append(line.lower())
+#     with open(filepath, "r", encoding="utf-8") as f:
+#         for line in f:
+#             line = line.strip()
+#             if not line or line.startswith("#"):  # skip comments or blank lines
+#                 continue
+#             if line.startswith("[") and line.endswith("]"):
+#                 current_category = line[1:-1].lower()
+#             elif current_category:
+#                 category_keywords[current_category].append(line.lower())
 
-    return category_keywords
+#     return category_keywords
 
-RESPONSES_FILE = DATA_FOLDER + "/responses.txt"
-def load_responses(filepath=RESPONSES_FILE) -> dict:
-    responses = defaultdict(list)
-    current_category = "general"
+# RESPONSES_FILE = DATA_FOLDER + "/responses.txt"
+# def load_responses(filepath=RESPONSES_FILE) -> dict:
+#     responses = defaultdict(list)
+#     current_category = "general"
 
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                current_category = line[1:-1].lower()
-            else:
-                responses[current_category].append(line)
+#     with open(filepath, "r", encoding="utf-8") as f:
+#         for line in f:
+#             line = line.strip()
+#             if not line:
+#                 continue
+#             if line.startswith("[") and line.endswith("]"):
+#                 current_category = line[1:-1].lower()
+#             else:
+#                 responses[current_category].append(line)
 
-    return responses
+#     return responses
 
-SPECIALS_FILE = DATA_FOLDER + "/special.txt"
-def load_special_responses(filepath=SPECIALS_FILE) -> dict:
-    special_responses = {}
-    with open(filepath, "r", encoding="utf-8") as f:
-        current_key = None
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                current_key = line[1:-1].lower()
-            elif current_key:
-                special_responses[current_key] = line  # only one response per special
-    return special_responses
+# SPECIALS_FILE = DATA_FOLDER + "/special.txt"
+# def load_special_responses(filepath=SPECIALS_FILE) -> dict:
+#     special_responses = {}
+#     with open(filepath, "r", encoding="utf-8") as f:
+#         current_key = None
+#         for line in f:
+#             line = line.strip()
+#             if not line:
+#                 continue
+#             if line.startswith("[") and line.endswith("]"):
+#                 current_key = line[1:-1].lower()
+#             elif current_key:
+#                 special_responses[current_key] = line  # only one response per special
+#     return special_responses
 
 def generate_ngrams(tokens, n):
     """
@@ -129,4 +129,4 @@ def categorize_question(question: str, category_keywords: dict) -> str:
             return cat
 
     # Safety fallback, shouldn't reach here
-    return "general"
+    return list(category_keywords.keys())[-1]

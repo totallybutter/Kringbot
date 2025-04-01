@@ -77,11 +77,8 @@ have i
 myself
 my own
 
-[love]
-love
-crush
-date
-feelings
-marry
-
-[general]
+[position]
+where
+where should
+where is
+where will
