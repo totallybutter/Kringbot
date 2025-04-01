@@ -1,58 +1,7 @@
+from utils import gsheet_utils                # For try_get_from_cache
+from collections import defaultdict  # For default dictionary structure
 import os
 from dotenv import load_dotenv
-from collections import defaultdict
-
-load_dotenv()
-DATA_FOLDER = "data"
-
-# CATEGORY_FILE = DATA_FOLDER + "/categories.txt"
-# def load_categories(filepath=CATEGORY_FILE) -> dict:
-#     category_keywords = defaultdict(list)
-#     current_category = None
-
-#     with open(filepath, "r", encoding="utf-8") as f:
-#         for line in f:
-#             line = line.strip()
-#             if not line or line.startswith("#"):  # skip comments or blank lines
-#                 continue
-#             if line.startswith("[") and line.endswith("]"):
-#                 current_category = line[1:-1].lower()
-#             elif current_category:
-#                 category_keywords[current_category].append(line.lower())
-
-#     return category_keywords
-
-# RESPONSES_FILE = DATA_FOLDER + "/responses.txt"
-# def load_responses(filepath=RESPONSES_FILE) -> dict:
-#     responses = defaultdict(list)
-#     current_category = "general"
-
-#     with open(filepath, "r", encoding="utf-8") as f:
-#         for line in f:
-#             line = line.strip()
-#             if not line:
-#                 continue
-#             if line.startswith("[") and line.endswith("]"):
-#                 current_category = line[1:-1].lower()
-#             else:
-#                 responses[current_category].append(line)
-
-#     return responses
-
-# SPECIALS_FILE = DATA_FOLDER + "/special.txt"
-# def load_special_responses(filepath=SPECIALS_FILE) -> dict:
-#     special_responses = {}
-#     with open(filepath, "r", encoding="utf-8") as f:
-#         current_key = None
-#         for line in f:
-#             line = line.strip()
-#             if not line:
-#                 continue
-#             if line.startswith("[") and line.endswith("]"):
-#                 current_key = line[1:-1].lower()
-#             elif current_key:
-#                 special_responses[current_key] = line  # only one response per special
-#     return special_responses
 
 def generate_ngrams(tokens, n):
     """
@@ -130,3 +79,43 @@ def categorize_question(question: str, category_keywords: dict) -> str:
 
     # Safety fallback, shouldn't reach here
     return list(category_keywords.keys())[-1]
+
+def load_categories_from_sheet(*, force=False):
+    load_dotenv()
+    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+    return gsheet_utils.try_get_from_cache(sheet_ask_name, "categories", force=force)
+
+def load_responses_from_sheet(*, force=False):
+    load_dotenv()
+    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+    return gsheet_utils.try_get_from_cache(sheet_ask_name, "responses", force=force)
+
+def load_specials_from_sheet(*, force=False):
+    load_dotenv()
+    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+    return gsheet_utils.try_get_from_cache(sheet_ask_name, "specials", force=force)
+
+def load_role_substring_responses(*, force=False):
+    load_dotenv()
+    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+    return gsheet_utils.try_get_from_cache(sheet_ask_name, "role_ask_responses", num_key_columns=2, force=force)
+
+def load_role_responses(*, force=False):
+    load_dotenv()
+    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+    return gsheet_utils.try_get_from_cache(sheet_ask_name, "role_responses", num_key_columns=2, num_value_columns=1, force=force)
+
+_sheet_loaders = {
+    "categories": load_categories_from_sheet,
+    "responses": load_responses_from_sheet,
+    "specials": load_specials_from_sheet,
+    "role_ask_responses": load_role_substring_responses,
+    "role_responses": load_role_responses,
+}
+def load_specified_sheet(key, force=False):
+    if key not in _sheet_loaders:
+        raise ValueError(f"Unknown sheet cache key: {key}")
+    return _sheet_loaders[key](force=force)
+
+
+

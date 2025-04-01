@@ -5,9 +5,8 @@ from google.oauth2 import service_account
 from dotenv import load_dotenv
 
 load_dotenv()
-
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_CREDS_PATH", "service_account.json")
+SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_CREDS_PATH")
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_JSON, scopes=SCOPES)
 drive_service = build('drive', 'v3', credentials=credentials)
