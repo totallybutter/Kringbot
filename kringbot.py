@@ -6,10 +6,11 @@ import glob
 import time
 import datetime
 import collections
+import ask_utils 
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord import option
-from collections import defaultdict
+
 
 load_dotenv()
 GUILD_ID_1 = int(os.getenv("GUILD_ID_1"))
@@ -35,79 +36,22 @@ async def about(ctx: discord.ApplicationContext):
     )
     await ctx.respond(info_text)
 
-CATEGORY_FILE = DATA_FOLDER + "/categories.txt"
-def load_categories(filepath=CATEGORY_FILE) -> dict:
-    category_keywords = defaultdict(list)
-    current_category = None
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):  # skip comments or blank lines
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                current_category = line[1:-1].lower()
-            elif current_category:
-                category_keywords[current_category].append(line.lower())
-
-    return category_keywords
-
-RESPONSES_FILE = DATA_FOLDER + "/responses.txt"
-def load_responses(filepath=RESPONSES_FILE) -> dict:
-    responses = defaultdict(list)
-    current_category = "general"
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                current_category = line[1:-1].lower()
-            else:
-                responses[current_category].append(line)
-
-    return responses
-
-SPECIALS_FILE = DATA_FOLDER + "/special.txt"
-def load_special_responses(filepath=SPECIALS_FILE) -> dict:
-    special_responses = {}
-    with open(filepath, "r", encoding="utf-8") as f:
-        current_key = None
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                current_key = line[1:-1].lower()
-            elif current_key:
-                special_responses[current_key] = line  # only one response per special
-    return special_responses
-
-def categorize_question(question: str, category_keywords: dict) -> str:
-    question = question.lower()
-    for category, keywords in category_keywords.items():
-        for keyword in keywords:
-            if keyword in question:
-                return category
-    return "general"
-
 @bot.slash_command(description="Ask Kringbot a question.")
 @option("question", description="Type your question", required=True)
 async def ask(ctx, question: str):
     question = question.lower()
 
-    category_keywords = load_categories()
-    responses_by_category = load_responses()
-    special_responses = load_special_responses()
+    category_keywords = ask_utils.load_categories()
+    responses_by_category = ask_utils.load_responses()
+    special_responses = ask_utils.load_special_responses()
 
-    for pattern, response in special_responses.items():
-        if pattern in question:
-            response = response.replace("{user}", ctx.author.display_name)
-            await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
-            return  # Skip the rest — we already responded
+    if question.strip() in special_responses:
+        # This ensures only exact matches trigger the response
+        response = special_responses[question.strip()].replace("{user}", ctx.author.display_name)
+        await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
+        return
 
-    category = categorize_question(question, category_keywords)
+    category = ask_utils.categorize_question(question, category_keywords)
     responses = responses_by_category.get(category, responses_by_category["general"])
 
     # Deterministic answer using hashed question

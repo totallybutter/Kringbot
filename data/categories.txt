@@ -1,9 +1,25 @@
 [timing]
+when will
+when do
+when does
+when did
 when
 how long
 soon
 before
 after
+time
+what time
+which time
+what day
+which day
+due
+deadline
+schedule
+day
+week
+month
+year
 
 [yesno]
 should
@@ -13,6 +29,19 @@ is it
 does
 are
 have
+did
+would
+could
+shall
+may
+isn't
+aren't
+haven't
+hasn't
+didn't
+wouldn't
+couldn't
+shouldn't
 
 [identity]
 who
@@ -20,18 +49,33 @@ name
 which person
 them
 they
+someone
+somebody
+person
+people
+whose
+which people
 
 [why]
 why
 reason
 how come
 explain
+cause
+purpose
+motivation
+meaning
+justify
 
 [self]
 am i
 was i
 will i
 do i
+did i
+have i
+myself
+my own
 
 [love]
 love
