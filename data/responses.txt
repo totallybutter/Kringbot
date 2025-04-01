@@ -29,7 +29,7 @@ because it was meant to be
 
 [self]
 well, {user}, only you can truly answer that for yourself!
-it sounds like you’re being too hard on yourself.
+who you are {user}, is up to you to decide!
 absolutely, you can do it if you believe in yourself!
 
 [love]
@@ -39,3 +39,5 @@ go for it!
 ask me again later
 interesting question!
 ask godgab
+huh?
+what?

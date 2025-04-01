@@ -119,6 +119,8 @@ def categorize_question(question: str, category_keywords: dict) -> str:
 
     # 6) Pick the category with the highest total score.
     best_score = max(scores.values())
+    if best_score == 0:
+        return "general"
     tied_categories = [cat for cat, s in scores.items() if s == best_score]
 
     # Tie‑break by whichever category appears first in the original dictionary order
@@ -126,5 +128,5 @@ def categorize_question(question: str, category_keywords: dict) -> str:
         if cat in tied_categories:
             return cat
 
-    # Safety fallback
+    # Safety fallback, shouldn't reach here
     return "general"

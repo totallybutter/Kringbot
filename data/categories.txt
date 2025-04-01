@@ -83,3 +83,5 @@ crush
 date
 feelings
 marry
+
+[general]
