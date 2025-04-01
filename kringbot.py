@@ -22,21 +22,28 @@ DATA_FOLDER = "data"
 
 @bot.event
 async def on_ready():
-    gsheet_utils.load_sheet_cache()
     print(f"{bot.user} is ready and online!")
+
 
 @bot.slash_command(name="hello", description="Say hello to the bot")
 async def hello(ctx: discord.ApplicationContext):
-    await ctx.respond("^ w^ Hewwo!")
+    roles = [role.name for role in ctx.author.roles]
+    response = gsheet_utils.get_response_for_role(roles, "hello")
+    if not response:
+        await ctx.respond("^ w^ Hewwo!")
+    else:
+        response = response.replace("{user}", ctx.author.display_name)
+        await ctx.respond(response)
+
 
 @bot.slash_command(name="show-cache", description="display internal cache")
-async def show_cache(ctx: discord.ApplicationContext):
-    category_keywords = gsheet_utils._sheet_cache["categories"]
+@option("Cache name", description="Cache to display", required=True)
+async def show_cache(ctx: discord.ApplicationContext, cache_name: str):
+    roles = [role.name for role in ctx.author.roles]
+    cache_list = gsheet_utils.try_get_from_cache(cache_name.lower())
     responses_by_category = gsheet_utils._sheet_cache["responses"]
     special_responses = gsheet_utils._sheet_cache["specials"]
-    print(f"category keywords: {category_keywords}")
-    print(f"responses by category: {responses_by_category}")
-    print(f"special responses: {special_responses}")
+    print(f"{cache_name}: {cache_list}")
     await ctx.respond("Shown cache in console")
     return
 
@@ -47,7 +54,7 @@ async def about(ctx: discord.ApplicationContext):
         f"Bot name: {bot.user.name}\n"
         "- `/about`: Show bot info.\n"
         "- `/ask <question>`: Ask the bot a question.\n"
-        "- `/refresh-ask`: Refreshes the bots response cache."
+        "- `/refresh-ask <cache_name>`: Refreshes the specified response cache for the bot."
         "- `/daily-kringles`: Get your personalised daily kringle image.\n"
         "- `/refresh-images`: Reload images from the Kringbot Daily Google Drive folder."
     )
@@ -56,14 +63,15 @@ async def about(ctx: discord.ApplicationContext):
 refresh_ask_cooldown = 0
 REFRESH_ASK_COOLDOWN_SECONDS = 120
 @bot.slash_command(name="refresh-ask", description="Recache the responses from online")
-async def refresh_cache(ctx:discord.ApplicationContext):
+@option("Cache name", description="Cache to refresh", required=True)
+async def refresh_cache(ctx:discord.ApplicationContext, cache_name: str):
     now = time.time()
     last_used = refresh_ask_cooldown
     time_since_last = now - last_used
     time_left = REFRESH_ASK_COOLDOWN_SECONDS - time_since_last
     if time_since_last > REFRESH_ASK_COOLDOWN_SECONDS:
-        gsheet_utils.load_sheet_cache()
-        await ctx.respond(f"📝 Refreshed response cache!")
+        gsheet_utils.try_get_from_cache(cache_name.lower(), True)
+        await ctx.respond(f"📝 Refreshed {cache_name} cache!")
     else:
         minutes = int((time_left % 3600) // 60)
         seconds = int(time_left % 60)
@@ -73,21 +81,30 @@ async def refresh_cache(ctx:discord.ApplicationContext):
 @option("question", description="Type your question", required=True)
 async def ask(ctx, question: str):
     question = question.lower()
-     
-    category_keywords = gsheet_utils._sheet_cache["categories"]
-    responses_by_category = gsheet_utils._sheet_cache["responses"]
-    special_responses = gsheet_utils._sheet_cache["specials"]
 
-    if not category_keywords or not responses_by_category:
-        await ctx.respond("⚠️ UmU I couldn't load my response data. Try `/refresh-ask` or contact the dev.")
-        return
-
+    special_responses = gsheet_utils.try_get_from_cache("specials")
     if special_responses:
         if question.strip() in special_responses:
             # This ensures only exact matches trigger the response
             response = special_responses[question.strip()].replace("{user}", ctx.author.display_name)
             await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
             return
+
+    role_substring_rules = gsheet_utils.try_get_from_cache("role_ask_responses")
+    role_names = [role.name for role in ctx.author.roles]
+    if role_substring_rules:
+        for role in role_names:
+            for rule_role, substr, responses in role_substring_rules:
+                if rule_role == role and substr in question:
+                    response = random.choice(responses).replace("{user}", ctx.author.display_name)
+                    await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
+                    return
+
+    category_keywords = gsheet_utils.try_get_from_cache("categories")
+    responses_by_category = gsheet_utils.try_get_from_cache("responses")
+    if not category_keywords or not responses_by_category:
+        await ctx.respond("⚠️ UmU I couldn't load my response data. Try `/refresh-ask` or contact the dev.")
+        return
 
     category = ask_utils.categorize_question(question, category_keywords)
     responses = responses_by_category.get(category, responses_by_category["general"])
@@ -107,6 +124,7 @@ async def ask(ctx, question: str):
     #add user's display name to personalize
     response = response.replace("{user}", ctx.author.display_name)
     await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
+
 
 refresh_img_cooldown = 0
 REFRESH_IMG_COOLDOWN_SECONDS = 300
@@ -162,5 +180,6 @@ async def daily_image(ctx):
     embed.set_image(url=image_url)
 
     await ctx.respond(embed=embed)
+
 
 bot.run(os.getenv("DISCORD_BOT_TOKEN")) # run the bot with the token

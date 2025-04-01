@@ -7,7 +7,9 @@ from collections import defaultdict
 _sheet_cache = {
     "categories": None,
     "responses": None,
-    "specials": None
+    "specials": None,
+    "role_ask_responses": None,
+    "role_responses": None,
 }
 
 load_dotenv()
@@ -25,7 +27,7 @@ client = gspread.authorize(CREDS)
 
 sheet = client.open(SHEET_NAME)
 
-def load_from_sheet(sheet, name):
+def _load_from_sheet(sheet, name):
     try:
         return sheet.worksheet(name)
     except gspread.exceptions.WorksheetNotFound:
@@ -33,7 +35,7 @@ def load_from_sheet(sheet, name):
         return None
 
 def load_categories_from_sheet():
-    worksheet = load_from_sheet(sheet, "categories")
+    worksheet = _load_from_sheet(sheet, "categories")
     if not worksheet:
         return {}
     rows = worksheet.get_all_values()[1:]
@@ -47,7 +49,7 @@ def load_categories_from_sheet():
     return category_keywords
 
 def load_responses_from_sheet():
-    worksheet = load_from_sheet(sheet, "responses")
+    worksheet = _load_from_sheet(sheet, "responses")
     if not worksheet:
         return {}
     rows = worksheet.get_all_values()[1:]
@@ -61,14 +63,65 @@ def load_responses_from_sheet():
     return responses
 
 def load_specials_from_sheet():
-    worksheet = load_from_sheet(sheet, "specials")
+    worksheet = _load_from_sheet(sheet, "specials")
     if not worksheet:
         return {}
     rows = worksheet.get_all_values()[1:]
     return {row[0].strip().lower(): row[1].strip() for row in rows if len(row) >= 2}
 
-def load_sheet_cache():
-    print("loaded sheet cache")
-    _sheet_cache["categories"] = load_categories_from_sheet()
-    _sheet_cache["responses"] = load_responses_from_sheet()
-    _sheet_cache["specials"] = load_specials_from_sheet()
+def load_role_substring_responses():
+    worksheet = _load_from_sheet(sheet, "role_ask_responses")
+    if not worksheet:
+        return {}
+    rows = worksheet.get_all_values()[1:]  # skip header
+    result = []
+
+    for row in rows:
+        if len(row) >= 3:
+            role = row[0].strip()
+            substr = row[1].strip().lower()
+            responses = [cell.strip() for cell in row[2:] if cell.strip()]
+            result.append((role, substr, responses))
+    return result
+
+def load_role_responses():
+    worksheet = _load_from_sheet(sheet, "role_responses")
+    if not worksheet:
+        return {}
+    rows = worksheet.get_all_values()
+    headers = rows[0][1:]  # e.g. hello, status, ...
+    data = {}
+
+    for row in rows[1:]:
+        role = row[0].strip()
+        responses = {header: row[i + 1].strip() for i, header in enumerate(headers) if i + 1 < len(row) and row[i + 1].strip()}
+        data[role] = responses
+    return data
+
+def get_response_for_role(role_names: list, header: str) -> str:
+    role_response_map = try_get_from_cache("role_responses")
+    for role in role_names:
+        if role in role_response_map and header in role_response_map[role]:
+            return role_response_map[role][header]
+    return None
+
+
+
+def load_keylist_from_sheet(key):
+    if key == "categories":
+        return load_categories_from_sheet()
+    elif key == "responses":
+        return load_responses_from_sheet()
+    elif key == "specials":
+        return load_specials_from_sheet()
+    elif key == "role_ask_responses":
+        return load_role_substring_responses()
+    elif key == "role_responses":
+        return load_role_responses()
+    else:
+        raise ValueError(f"Unknown sheet cache key: {key}")
+
+def try_get_from_cache(key, force = False):
+    if force or key not in _sheet_cache or not _sheet_cache[key]:
+        _sheet_cache[key] = load_keylist_from_sheet(key)
+    return _sheet_cache[key]
