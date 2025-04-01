@@ -29,6 +29,17 @@ async def on_ready():
 async def hello(ctx: discord.ApplicationContext):
     await ctx.respond("^ w^ Hewwo!")
 
+@bot.slash_command(name="show-cache", description="display internal cache")
+async def show_cache(ctx: discord.ApplicationContext):
+    category_keywords = gsheet_utils._sheet_cache["categories"]
+    responses_by_category = gsheet_utils._sheet_cache["responses"]
+    special_responses = gsheet_utils._sheet_cache["specials"]
+    print(f"category keywords: {category_keywords}")
+    print(f"responses by category: {responses_by_category}")
+    print(f"special responses: {special_responses}")
+    await ctx.respond("Shown cache in console")
+    return
+
 
 @bot.slash_command(name="about",description="Show bot info and list of available commands.")
 async def about(ctx: discord.ApplicationContext):
@@ -38,27 +49,25 @@ async def about(ctx: discord.ApplicationContext):
         "- `/ask <question>`: Ask the bot a question.\n"
         "- `/refresh-ask`: Refreshes the bots response cache."
         "- `/daily-kringles`: Get your personalised daily kringle image.\n"
+        "- `/refresh-images`: Reload images from the Kringbot Daily Google Drive folder."
     )
     await ctx.respond(info_text)
 
-refresh_cooldown = 0
-REFRESH_COOLDOWN_SECONDS = 120
+refresh_ask_cooldown = 0
+REFRESH_ASK_COOLDOWN_SECONDS = 120
 @bot.slash_command(name="refresh-ask", description="Recache the responses from online")
 async def refresh_cache(ctx:discord.ApplicationContext):
     now = time.time()
-    last_used = refresh_cooldown
+    last_used = refresh_ask_cooldown
     time_since_last = now - last_used
-    time_left = REFRESH_COOLDOWN_SECONDS - time_since_last
-    if time_since_last > REFRESH_COOLDOWN_SECONDS:
+    time_left = REFRESH_ASK_COOLDOWN_SECONDS - time_since_last
+    if time_since_last > REFRESH_ASK_COOLDOWN_SECONDS:
         gsheet_utils.load_sheet_cache()
-        await ctx.respond("📝 Refreshed response cache!")
+        await ctx.respond(f"📝 Refreshed response cache!")
     else:
-        hours = int(time_left // 3600)
         minutes = int((time_left % 3600) // 60)
         seconds = int(time_left % 60)
-        await ctx.respond("⏳ A refresh was done recently! Try again in {hours}h {minutes}m {seconds}s.")
-
-
+        await ctx.respond(f"⏳ A refresh was done recently! Try again in {minutes}m {seconds}s.")
 
 @bot.slash_command(description="Ask Kringbot a question.")
 @option("question", description="Type your question", required=True)
@@ -98,6 +107,29 @@ async def ask(ctx, question: str):
     #add user's display name to personalize
     response = response.replace("{user}", ctx.author.display_name)
     await ctx.respond(f"**{ctx.author.display_name} asks**: {question}\n**Kringbot says**: {response}")
+
+refresh_img_cooldown = 0
+REFRESH_IMG_COOLDOWN_SECONDS = 300
+@bot.slash_command(name="refresh-images", description="Reload images from the Kringbot Daily Google Drive folder.")
+async def refresh_images(ctx):
+
+    now = time.time()
+    last_used = refresh_img_cooldown
+    time_since_last = now - last_used
+    time_left = REFRESH_IMG_COOLDOWN_SECONDS - time_since_last
+    if time_since_last < REFRESH_IMG_COOLDOWN_SECONDS:
+        minutes = int((time_left % 3600) // 60)
+        seconds = int(time_left % 60)
+        await ctx.respond(f"⏳ A refresh was done recently! Try again in {minutes}m {seconds}s.")
+        return
+
+    folder_id = os.getenv("DAILY_IMAGE_FOLDER_ID")
+    success = gimg_utils.refresh_folder_cache(folder_id)
+
+    if success:
+        await ctx.respond("✅ Image list has been refreshed.")
+    else:
+        await ctx.respond("❌ Could not refresh image list. Check folder access or ID.")
 
 image_cooldowns = {}  # Dict to track last use time per user (user_id: timestamp)
 DAILY_FOLDER_NAME = os.getenv("DAILY_IMAGE_FOLDER_ID")  # Optional override

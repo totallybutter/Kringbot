@@ -56,6 +56,15 @@ def _get_images_in_folder(folder_name: str):
     return _image_list_cache[folder_id]
 
 # --- Access API ---
+def refresh_folder_cache(folder_name: str) -> bool:
+    """Manually re-fetch image list for a folder by name."""
+    folder_id = _get_folder_id_by_name(folder_name)
+    if not folder_id:
+        return False
+
+    _image_list_cache[folder_id] = _load_image_list_for_folder(folder_id)
+    return True
+
 def get_random_image_url(folder_name: str):
     """Return a random image URL from the specified folder."""
     images = _get_images_in_folder(folder_name)
