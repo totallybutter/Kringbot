@@ -3,16 +3,15 @@ import time
 import os
 from discord.ext import commands
 from discord.commands import slash_command
-from utils import gimg_utils  # Assuming this is your utility for Google Drive
+from utils import gimg_utils, bot_prefs
 
 REFRESH_IMG_COOLDOWN_SECONDS = 300
-COOLDOWN_SECONDS = 65
+DAILY_COOLDOWN_SECONDS = 60 * 60 * 12
 
 class ImgCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.refresh_img_cooldown = 0
-        self.image_cooldowns = {}
         self.img_folder_name = os.environ.get("DAILY_IMAGE_FOLDER_ID")
         if not self.img_folder_name:
             raise RuntimeError("DAILY_IMAGE_FOLDER_ID not found in environment variables!")
@@ -43,24 +42,20 @@ class ImgCog(commands.Cog):
     async def daily_image(self, ctx):
         await ctx.defer()
         user_id = ctx.author.id
-        now = time.time()
-
-        last_used = self.image_cooldowns.get(user_id, 0)
-        time_since_last = now - last_used
-        time_left = COOLDOWN_SECONDS - time_since_last
-
-        if time_since_last < COOLDOWN_SECONDS:
-            minutes = int((time_left % 3600) // 60)
-            seconds = int(time_left % 60)
-            await ctx.respond(f"⏳ You've already received your image of the day! Try again in {minutes}m {seconds}s.")
+        remaining = int(bot_prefs.get(f"daily_img_cd_{user_id}", 0))
+        if remaining > 0:
+            hours = remaining // 3600
+            minutes = (remaining % 3600) // 60
+            seconds = remaining % 60
+            await ctx.respond(f"⏳ You've already received your image of the day! Try again in {hours}h {minutes}m {seconds}s.")
             return
 
         image_url = gimg_utils.get_random_image_url(self.img_folder_name)
         if not image_url:
             await ctx.respond("⚠️ UmU Could not find images in the daily folder. Try contacting the dev.")
             return
-
-        self.image_cooldowns[user_id] = now
+        # Set cooldown for this user
+        bot_prefs.set(f"daily_img_cd_{user_id}", DAILY_COOLDOWN_SECONDS, time_based=True)
         embed = discord.Embed(title=f"🖼️ Here's your image of the day, {ctx.author.display_name}!")
         embed.set_image(url=image_url)
 

@@ -161,3 +161,4 @@ cython_debug/
 
 .env
 kringbot-58a271c2be97.json
+kringbot_prefs.json

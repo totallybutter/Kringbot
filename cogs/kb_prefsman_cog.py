@@ -6,6 +6,10 @@ from utils import bot_prefs, drive_prefs
 LOCAL_PREF_PATH = "kringbot_prefs.json"
 
 def _save_prefs():
+    if not bot_prefs.all_keys():
+        print("[PrefsManager] 💤 No prefs to save — skipping Drive upload.")
+        return
+    
     bot_prefs.save(LOCAL_PREF_PATH)
     drive_prefs.upload_to_drive(LOCAL_PREF_PATH)
     print("[PrefsManager] 🧷 Saved prefs via atexit.")
