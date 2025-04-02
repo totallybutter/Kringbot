@@ -36,21 +36,21 @@ class PrefsManager(commands.Cog):
     async def on_close(self):
         self._save_prefs()
 
-    @discord.slash_command(description="Save current bot prefs to Drive")
-    async def save_db(self, ctx):
-        await ctx.defer()
-        self._save_prefs()
-        await ctx.respond("✅ Preferences saved to Google Drive.")
+    # @discord.slash_command(name="save-db", escription="Save current bot prefs to Drive")
+    # async def save_db(self, ctx):
+    #     await ctx.defer()
+    #     self._save_prefs()
+    #     await ctx.respond("✅ Preferences saved to Google Drive.")
 
-    @discord.slash_command(description="Load bot prefs from Drive (manual override)")
-    async def load_db(self, ctx):
-        await ctx.defer()
-        success = drive_prefs.download_from_drive(LOCAL_PREF_PATH)
-        if success:
-            bot_prefs.load(LOCAL_PREF_PATH)
-            await ctx.respond("✅ Preferences loaded from Google Drive.")
-        else:
-            await ctx.respond("⚠️ Could not load prefs from Drive.")
+    # @discord.slash_command(name="load-db",description="Load bot prefs from Drive (manual override)")
+    # async def load_db(self, ctx):
+    #     await ctx.defer()
+    #     success = drive_prefs.download_from_drive(LOCAL_PREF_PATH)
+    #     if success:
+    #         bot_prefs.load(LOCAL_PREF_PATH)
+    #         await ctx.respond("✅ Preferences loaded from Google Drive.")
+    #     else:
+    #         await ctx.respond("⚠️ Could not load prefs from Drive.")
 
 def setup(bot):
     bot.add_cog(PrefsManager(bot))

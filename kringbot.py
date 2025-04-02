@@ -35,7 +35,7 @@ async def on_ready():
 @bot.slash_command(name="sync-cogs", description="Sync up cog commands")
 async def sync_cogs(ctx: discord.ApplicationContext):
     await ctx.defer()
-    await bot.sync_commands()
+    await bot.sync_commands(delete_existing=True)
     await ctx.followup.send("🔄 Slash commands synced globally.")
 
 bot.run(os.getenv("DISCORD_BOT_TOKEN")) # run bot
