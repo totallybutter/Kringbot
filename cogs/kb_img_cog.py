@@ -7,6 +7,7 @@ from utils import gimg_utils, bot_prefs
 
 REFRESH_IMG_COOLDOWN_SECONDS = 300
 DAILY_COOLDOWN_SECONDS = 60 * 60 * 12
+KRINGPIC_COOLDOWN_SECONDS = 65
 
 class ImgCog(commands.Cog):
     def __init__(self, bot):
@@ -57,6 +58,28 @@ class ImgCog(commands.Cog):
         # Set cooldown for this user
         bot_prefs.set(f"daily_img_cd_{user_id}", DAILY_COOLDOWN_SECONDS, time_based=True)
         embed = discord.Embed(title=f"🖼️ Here's your image of the day, {ctx.author.display_name}!")
+        embed.set_image(url=image_url)
+
+        await ctx.respond(embed=embed)
+
+    @discord.slash_command(name="kring-pic", description="Get a randomised kring pic!")
+    async def kringpic_image(self, ctx):
+        await ctx.defer()
+        user_id = ctx.author.id
+        remaining = int(bot_prefs.get(f"kringpic_img_cd_{user_id}", 0))
+        if remaining > 0:
+            minutes = (remaining % 3600) // 60
+            seconds = remaining % 60
+            await ctx.respond(f"⏳ You've already received your image of the day! Try again in {minutes}m {seconds}s.")
+            return
+
+        image_url = gimg_utils.get_random_image_url(self.img_folder_name)
+        if not image_url:
+            await ctx.respond("⚠️ UmU Could not find images in the images folder. Try contacting the dev.")
+            return
+        # Set cooldown for this user
+        bot_prefs.set(f"kringpic_img_cd_{user_id}", KRINGPIC_COOLDOWN_SECONDS, time_based=True)
+        embed = discord.Embed(title=f"🖼️ Here's a kring pic, {ctx.author.display_name}!")
         embed.set_image(url=image_url)
 
         await ctx.respond(embed=embed)

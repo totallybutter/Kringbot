@@ -1,12 +1,12 @@
 {
-  "test_counter": {
-    "value": 8,
-    "time_based": false,
-    "saved_at": null
-  },
-  "test_cooldown": {
-    "value": 48.48871874809265,
+  "daily_img_cd_250264560554999808": {
+    "value": 43073.17391014099,
     "time_based": true,
-    "saved_at": 1743583294.2368097
+    "saved_at": 1743584096.1233673
+  },
+  "daily_img_cd_170479538151751682": {
+    "value": 43154.094955444336,
+    "time_based": true,
+    "saved_at": 1743584096.1233673
   }
 }
