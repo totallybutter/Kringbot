@@ -9,7 +9,7 @@ from discord.commands import option
 from dotenv import load_dotenv
 
 from utils import gsheet_utils
-from utils.ask_utils import categorize_question, load_specified_ask_sheet, load_all_ask_sheets
+from utils.ask_utils import categorize_question, load_specified_ask_sheet, load_all_ask_sheets, get_responses_for_role
 
 REFRESH_ASK_COOLDOWN_SECONDS = 120
 
@@ -21,6 +21,23 @@ class AskCog(commands.Cog):
         if not self.sheet_name:
             raise RuntimeError("ASK_SHEET_NAME not found in environment variables!")
         print("✅ AskCog loaded!")
+
+    @discord.slash_command(name="hello", description="Say hello to kringbot")
+    async def hello(self, ctx: discord.ApplicationContext):
+        defaultResponses = [
+            "^ w^ Hewwo!",
+            "^w ^ Nyah Nyah!",
+            "Hewwo! ^w ^",
+            "Nyah Nyah! ^ w^"
+        ]
+        roles = [role.name for role in ctx.author.roles]
+        responses = get_responses_for_role(self.sheet_name, roles, "hello")
+        if not responses:
+            response = random.choice(defaultResponses)
+        else:
+            response = random.choice(responses).replace("{user}", ctx.author.display_name)
+        await ctx.respond(response)
+
 
     @discord.slash_command(name="refresh-ask", description="Recache the responses from online")
     @option("Cache name", description="Cache to refresh", required=True)

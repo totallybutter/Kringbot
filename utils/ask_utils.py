@@ -110,6 +110,17 @@ def load_all_ask_sheets(sheet_ask_name: str):
     for key, loader_fn in _sheet_loaders.items():
         loader_fn(sheet_ask_name, force=True)
 
+def get_responses_for_role(sheet_ask_name: str, roles : list[str], key : str):
+    role_responses = load_role_responses(sheet_ask_name)
+    for role in roles:
+        response = role_responses.get((role, key))
+        if response:
+            return response  # This is a list with 1 string (based on num_value_columns=1)
+
+    return None  # No match found
+
+
+
 
 
 
