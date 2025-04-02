@@ -1,7 +1,6 @@
 from utils import gsheet_utils                # For try_get_from_cache
 from collections import defaultdict  # For default dictionary structure
 import os
-from dotenv import load_dotenv
 
 def generate_ngrams(tokens, n):
     """
@@ -80,29 +79,19 @@ def categorize_question(question: str, category_keywords: dict) -> str:
     # Safety fallback, shouldn't reach here
     return list(category_keywords.keys())[-1]
 
-def load_categories_from_sheet(*, force=False):
-    load_dotenv()
-    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+def load_categories_from_sheet(sheet_ask_name : str, force=False):
     return gsheet_utils.try_get_from_cache(sheet_ask_name, "categories", force=force)
 
-def load_responses_from_sheet(*, force=False):
-    load_dotenv()
-    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+def load_responses_from_sheet(sheet_ask_name : str, force=False):
     return gsheet_utils.try_get_from_cache(sheet_ask_name, "responses", force=force)
 
-def load_specials_from_sheet(*, force=False):
-    load_dotenv()
-    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+def load_specials_from_sheet(sheet_ask_name : str, force=False):
     return gsheet_utils.try_get_from_cache(sheet_ask_name, "specials", force=force)
 
-def load_role_substring_responses(*, force=False):
-    load_dotenv()
-    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+def load_role_substring_responses(sheet_ask_name : str, force=False):
     return gsheet_utils.try_get_from_cache(sheet_ask_name, "role_ask_responses", num_key_columns=2, force=force)
 
-def load_role_responses(*, force=False):
-    load_dotenv()
-    sheet_ask_name = os.getenv("ASK_SHEET_NAME")
+def load_role_responses(sheet_ask_name : str, force=False):
     return gsheet_utils.try_get_from_cache(sheet_ask_name, "role_responses", num_key_columns=2, num_value_columns=1, force=force)
 
 _sheet_loaders = {
@@ -112,10 +101,15 @@ _sheet_loaders = {
     "role_ask_responses": load_role_substring_responses,
     "role_responses": load_role_responses,
 }
-def load_specified_sheet(key, force=False):
+def load_specified_ask_sheet(sheet_ask_name: str, key: str, force=False):
     if key not in _sheet_loaders:
         raise ValueError(f"Unknown sheet cache key: {key}")
-    return _sheet_loaders[key](force=force)
+    return _sheet_loaders[key](sheet_ask_name, force=force)
+
+def load_all_ask_sheets(sheet_ask_name: str):
+    for key, loader_fn in _sheet_loaders.items():
+        loader_fn(sheet_ask_name, force=True)
+
 
 
 

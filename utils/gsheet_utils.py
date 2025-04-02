@@ -5,8 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from collections import defaultdict
 
 _sheet_cache = {}
-load_dotenv()
-CREDS_PATH = os.getenv("GOOGLE_CREDS_PATH")
+CREDS_PATH = os.environ.get("GOOGLE_CREDS_PATH")
 SCOPE = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive"

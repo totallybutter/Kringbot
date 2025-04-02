@@ -4,9 +4,10 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from dotenv import load_dotenv
 
-load_dotenv()
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_CREDS_PATH")
+SERVICE_ACCOUNT_JSON = os.environ.get("GOOGLE_CREDS_PATH")
+if not SERVICE_ACCOUNT_JSON:
+    raise RuntimeError("Missing GOOGLE_CREDS_PATH environment variable.")
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_JSON, scopes=SCOPES)
 drive_service = build('drive', 'v3', credentials=credentials)
