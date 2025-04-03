@@ -30,11 +30,11 @@ class PrefsManager(commands.Cog):
 
     @commands.Cog.listener()
     async def on_disconnect(self):
-        self._save_prefs()
+        _save_prefs()
 
     @commands.Cog.listener()
     async def on_close(self):
-        self._save_prefs()
+        _save_prefs()
 
     # @discord.slash_command(name="save-db", escription="Save current bot prefs to Drive")
     # async def save_db(self, ctx):

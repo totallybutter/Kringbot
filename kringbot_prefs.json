@@ -1,42 +1,57 @@
 {
   "daily_img_cd_170479538151751682": {
-    "value": 37457.33431506157,
+    "value": 26410.754770040512,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "kringpic_img_cd_170479538151751682": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "daily_img_cd_217668205597032448": {
-    "value": 37977.082768917084,
+    "value": 26930.503223896027,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "daily_img_cd_186860864219906048": {
-    "value": 39484.776802539825,
+    "value": 28438.19725751877,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "daily_img_cd_239072925137895424": {
-    "value": 39654.50688242912,
+    "value": 28607.927337408066,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "daily_img_cd_598362608944545802": {
-    "value": 39810.77537107468,
+    "value": 28764.19582605362,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "daily_img_cd_616985004257312825": {
-    "value": 40084.194070100784,
+    "value": 29037.614525079727,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
   },
   "kringpic_img_cd_616985004257312825": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743657947.063474
+    "saved_at": 1743668993.643019
+  },
+  "daily_img_cd_250264560554999808": {
+    "value": 33602.21196103096,
+    "time_based": true,
+    "saved_at": 1743668993.643019
+  },
+  "kringpic_img_cd_250264560554999808": {
+    "value": 0,
+    "time_based": true,
+    "saved_at": 1743668993.643019
+  },
+  "kringpic_img_cd_140301928486797313": {
+    "value": 0,
+    "time_based": true,
+    "saved_at": 1743668993.643019
   }
 }

@@ -310,6 +310,8 @@ class MessageManager(commands.Cog):
         except Exception as e:
             print(f"❗ Unexpected error in /purge-deleted: {e}")
 
+    purge_deleted.callback.hidden = True
+
     @discord.slash_command(
         name="purge-edited",
         description="Purge all tracked edited messages for a user in this server.",
@@ -339,6 +341,7 @@ class MessageManager(commands.Cog):
         except Exception as e:
             print(f"❗ Unexpected error in /purge-edited: {e}")
 
+    purge_edited.callback.hidden = True
 
     @commands.Cog.listener()
     async def on_ready(self):
