@@ -1,6 +1,7 @@
 from utils import gsheet_utils                # For try_get_from_cache
 from collections import defaultdict  # For default dictionary structure
 import os
+import random
 
 def generate_ngrams(tokens, n):
     """
@@ -110,14 +111,39 @@ def load_all_ask_sheets(sheet_ask_name: str):
     for key, loader_fn in _sheet_loaders.items():
         loader_fn(sheet_ask_name, force=True)
 
-def get_responses_for_role(sheet_ask_name: str, roles : list[str], key : str):
+def get_substring_response(sheet_ask_name: str, username: str, roles: list[str], question: str):
+    role_substring_rules = load_role_substring_responses(sheet_ask_name)
+
+    # 1. Check user name as "role"
+    for (rule_role, substr), responses in role_substring_rules.items():
+        if rule_role == username and substr in question:
+            return random.choice(responses)
+
+    # 2. Fallback to actual roles
+    for role in roles:
+        for (rule_role, substr), responses in role_substring_rules.items():
+            if rule_role == role and substr in question:
+                return random.choice(responses)
+
+    return None
+
+def get_responses_for_role(sheet_ask_name: str, roles: list[str], key: str, username: str = None):
     role_responses = load_role_responses(sheet_ask_name)
+
+    # ✅ 1. Check if the user's actual username (not nickname) has a direct match
+    if username:
+        user_response = role_responses.get((username, key))
+        if user_response:
+            return user_response
+
+    # ✅ 2. Fallback: check all roles
     for role in roles:
         response = role_responses.get((role, key))
         if response:
-            return response  # This is a list with 1 string (based on num_value_columns=1)
+            return response
 
     return None  # No match found
+
 
 
 

@@ -9,7 +9,7 @@ from discord.commands import option
 from dotenv import load_dotenv
 
 from utils import gsheet_utils
-from utils.ask_utils import categorize_question, load_specified_ask_sheet, load_all_ask_sheets, get_responses_for_role
+from utils.ask_utils import categorize_question, load_specified_ask_sheet, load_all_ask_sheets, get_responses_for_role, get_substring_response
 
 REFRESH_ASK_COOLDOWN_SECONDS = 120
 
@@ -30,8 +30,9 @@ class AskCog(commands.Cog):
             "Hewwo! ^w ^",
             "Nyah Nyah! ^ w^"
         ]
+        username = ctx.author.name   # This is the real username, not display/nickname
         roles = [role.name for role in ctx.author.roles]
-        responses = get_responses_for_role(self.sheet_name, roles, "hello")
+        responses = get_responses_for_role(self.sheet_name, roles, "hello", username=username)
         if not responses:
             response = random.choice(defaultResponses)
         else:
@@ -83,13 +84,11 @@ class AskCog(commands.Cog):
                 return
 
             # Role-specific response
-            role_substring_rules = load_specified_ask_sheet(self.sheet_name, "role_ask_responses")
-            for role in role_names:
-                for (rule_role, substr), responses in role_substring_rules.items():
-                    if rule_role == role and substr in question:
-                        response = random.choice(responses).replace("{user}", display_name)
-                        await ctx.respond(f"**{display_name} asks**: {question}\n**Kringbot says**: {response}")
-                        return
+            response = get_substring_response(self.sheet_name, ctx.author.name, role_names, question)
+            if response:
+                response = response.replace("{user}", display_name)
+                await ctx.respond(f"**{display_name} asks**: {question}\n**Kringbot says**: {response}")
+                return
 
             category_keywords = load_specified_ask_sheet(self.sheet_name, "categories")
             responses_by_category = load_specified_ask_sheet(self.sheet_name, "responses")
