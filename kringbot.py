@@ -14,11 +14,11 @@ intents.message_content = True
 bot = discord.Bot(debug_guilds=GUILD_IDS, intents=intents)
 
 # --- Loading Cogs (modules) ---
+bot.load_extension("cogs.kb_prefsman_cog")  # Load PrefsManager
 bot.load_extension("cogs.kb_ask_cog")       # Load AskCog
 bot.load_extension("cogs.kb_img_cog")       # Load ImgCog
 bot.load_extension("cogs.kb_help_cog")      # Load HelpCog
 bot.load_extension("cogs.kb_msgman_cog")    # Load MessageManager
-bot.load_extension("cogs.kb_prefsman_cog")  # Load PrefsManager
 
 @bot.event
 async def on_ready():
@@ -34,7 +34,7 @@ async def on_ready():
 
 @bot.slash_command(name="sync-cogs", description="Sync up cog commands")
 async def sync_cogs(ctx: discord.ApplicationContext):
-    await ctx.defer()
+    await ctx.defer(ephemeral=True)
     await bot.sync_commands(delete_existing=True)
     await ctx.followup.send("🔄 Slash commands synced globally.")
 

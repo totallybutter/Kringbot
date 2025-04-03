@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.commands import slash_command, Option
 from discord.ui import View, Button
 
-BOT_VERSION = "0.3.2"
+BOT_VERSION = "1.0.0"
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):

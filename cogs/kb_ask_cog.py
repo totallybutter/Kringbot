@@ -42,7 +42,7 @@ class AskCog(commands.Cog):
     @discord.slash_command(name="refresh-ask", description="Recache the responses from online")
     @option("Cache name", description="Cache to refresh", required=True)
     async def refresh_cache(self, ctx: discord.ApplicationContext, cache_name: str):
-        await ctx.defer()
+        await ctx.defer(ephemeral=True)
         
         now = time.time()
         time_since_last = now - self.refresh_ask_cooldown
@@ -110,7 +110,7 @@ class AskCog(commands.Cog):
     @discord.slash_command(name="show-ask-cache", description="Display specified `ask` internal cache")
     @option("Cache name", description="Cache to display", required=True)
     async def show_ask_cache(self, ctx: discord.ApplicationContext, cache_name: str):
-        await ctx.defer()
+        await ctx.defer(ephemeral=True)
         cache = load_specified_ask_sheet(self.sheet_name, cache_name.lower())
         print(f"{cache_name}: {cache}")
         await ctx.respond("✅ Cache printed to console.")

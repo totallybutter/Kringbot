@@ -20,7 +20,7 @@ class ImgCog(commands.Cog):
 
     @discord.slash_command(name="refresh-images", description="Reload images from the Kringbot Daily Google Drive folder.")
     async def refresh_images(self, ctx):
-        await ctx.defer()
+        await ctx.defer(ephemeral=True)
         now = time.time()
         time_since_last = now - self.refresh_img_cooldown
         time_left = REFRESH_IMG_COOLDOWN_SECONDS - time_since_last
