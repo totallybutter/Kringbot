@@ -34,8 +34,13 @@ async def on_ready():
 
 @bot.slash_command(name="sync-cogs", description="Sync up cog commands")
 async def sync_cogs(ctx: discord.ApplicationContext):
-    await ctx.defer(ephemeral=True)
-    await bot.sync_commands(delete_existing=True)
-    await ctx.followup.send("🔄 Slash commands synced globally.")
+    try:
+        await ctx.defer(ephemeral=True)
+        await bot.sync_commands(delete_existing=True)
+        await ctx.followup.send("🔄 Slash commands synced globally.")
+    except discord.errors.NotFound:
+        print("❌ Interaction expired before response could be sent.")
+    except Exception as e:
+        print(f"❗ Unexpected error in /sync-cogs: {e}")
 
 bot.run(os.getenv("DISCORD_BOT_TOKEN")) # run bot

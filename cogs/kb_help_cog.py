@@ -20,36 +20,41 @@ class HelpCog(commands.Cog):
         ctx,
         command_name: Option(str, "Optional command to get detailed help", required=False)
     ):
-        await ctx.defer(ephemeral=True)
-        if command_name:
-            # Show help for a specific command
-            cmd = self.bot.get_application_command(command_name)
-            if not cmd:
-                await ctx.respond(f"❌ Command `{command_name}` not found.")
-                return
+        try:
+            await ctx.defer(ephemeral=True)
+            if command_name:
+                # Show help for a specific command
+                cmd = self.bot.get_application_command(command_name)
+                if not cmd:
+                    await ctx.respond(f"❌ Command `{command_name}` not found.")
+                    return
 
-            embed = discord.Embed(
-                title=f"❔ Help: /{cmd.name}",
-                description=cmd.description or "No description provided.",
-                color=discord.Color.green()
-            )
+                embed = discord.Embed(
+                    title=f"❔ Help: /{cmd.name}",
+                    description=cmd.description or "No description provided.",
+                    color=discord.Color.green()
+                )
 
-            # Optionally list parameters
-            if hasattr(cmd, "options") and cmd.options:
-                for opt in cmd.options:
-                    opt_type = str(opt.input_type).split('.')[-1].capitalize()
-                    required = "✅" if opt.required else "❌"
-                    embed.add_field(
-                        name=f"`{opt.name}` ({opt_type}, Required: {required})",
-                        value=opt.description or "No description.",
-                        inline=False
-                    )
+                # Optionally list parameters
+                if hasattr(cmd, "options") and cmd.options:
+                    for opt in cmd.options:
+                        opt_type = str(opt.input_type).split('.')[-1].capitalize()
+                        required = "✅" if opt.required else "❌"
+                        embed.add_field(
+                            name=f"`{opt.name}` ({opt_type}, Required: {required})",
+                            value=opt.description or "No description.",
+                            inline=False
+                        )
 
-            await ctx.respond(embed=embed)
+                await ctx.respond(embed=embed)
 
-        else:
-            # Show paginated general command list
-            await self.show_paginated_help(ctx)
+            else:
+                # Show paginated general command list
+                await self.show_paginated_help(ctx)
+        except discord.errors.NotFound:
+            print("❌ Interaction expired before response could be sent.")
+        except Exception as e:
+            print(f"❗ Unexpected error in /help: {e}")
 
     async def show_paginated_help(self, ctx):
         seen = set()
@@ -90,32 +95,37 @@ class HelpCog(commands.Cog):
         default_member_permissions=discord.Permissions(administrator=True)
     )
     async def status(self, ctx: discord.ApplicationContext):
-        await ctx.defer(ephemeral=True)
+        try:
+            await ctx.defer(ephemeral=True)
 
-        bot = self.bot
-        user_id = ctx.author.id
-        now = time.time()
+            bot = self.bot
+            user_id = ctx.author.id
+            now = time.time()
 
-        uptime_seconds = int(now - self.start_time)
-        uptime_str = time.strftime("%Hh %Mm %Ss", time.gmtime(uptime_seconds))
+            uptime_seconds = int(now - self.start_time)
+            uptime_str = time.strftime("%Hh %Mm %Ss", time.gmtime(uptime_seconds))
 
-        process = psutil.Process()
-        mem_mb = process.memory_info().rss / 1024 / 1024
+            process = psutil.Process()
+            mem_mb = process.memory_info().rss / 1024 / 1024
 
-        embed = discord.Embed(title="🤖 Kringbot Status", color=discord.Color.green())
-        embed.add_field(name="🆔 Bot ID", value=bot.user.id, inline=True)
-        embed.add_field(name="📡 Latency", value=f"{round(bot.latency * 1000)}ms", inline=True)
-        embed.add_field(name="🌐 Guilds", value=len(bot.guilds), inline=True)
-        embed.add_field(name="👥 Users", value=sum(g.member_count or 0 for g in bot.guilds), inline=True)
-        embed.add_field(name="📋 Slash Commands", value=len(bot.application_commands), inline=True)
-        embed.add_field(name="🕓 Uptime", value=uptime_str, inline=True)
-        embed.add_field(name="💾 RAM Usage", value=f"{mem_mb:.2f} MB", inline=True)
-        embed.add_field(name="🧠 Python", value=platform.python_version(), inline=True)
-        embed.add_field(name="📦 Pycord", value=discord.__version__, inline=True)
-        embed.add_field(name="🔧 Bot Version", value=BOT_VERSION, inline=True)
-        embed.set_footer(text=f"{bot.user.name} is online!")
+            embed = discord.Embed(title="🤖 Kringbot Status", color=discord.Color.green())
+            embed.add_field(name="🆔 Bot ID", value=bot.user.id, inline=True)
+            embed.add_field(name="📡 Latency", value=f"{round(bot.latency * 1000)}ms", inline=True)
+            embed.add_field(name="🌐 Guilds", value=len(bot.guilds), inline=True)
+            embed.add_field(name="👥 Users", value=sum(g.member_count or 0 for g in bot.guilds), inline=True)
+            embed.add_field(name="📋 Slash Commands", value=len(bot.application_commands), inline=True)
+            embed.add_field(name="🕓 Uptime", value=uptime_str, inline=True)
+            embed.add_field(name="💾 RAM Usage", value=f"{mem_mb:.2f} MB", inline=True)
+            embed.add_field(name="🧠 Python", value=platform.python_version(), inline=True)
+            embed.add_field(name="📦 Pycord", value=discord.__version__, inline=True)
+            embed.add_field(name="🔧 Bot Version", value=BOT_VERSION, inline=True)
+            embed.set_footer(text=f"{bot.user.name} is online!")
 
-        await ctx.respond(embed=embed, ephemeral=True)
+            await ctx.respond(embed=embed, ephemeral=True)
+        except discord.errors.NotFound:
+            print("❌ Interaction expired before response could be sent.")
+        except Exception as e:
+            print(f"❗ Unexpected error in /status: {e}")
 
 class HelpPaginationView(discord.ui.View):
     def __init__(self, pages, make_embed_fn, author_id):
