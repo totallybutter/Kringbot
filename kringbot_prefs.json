@@ -1,57 +1,45 @@
 {
-  "daily_img_cd_170479538151751682": {
-    "value": 26410.754770040512,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "kringpic_img_cd_170479538151751682": {
-    "value": 0,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "daily_img_cd_217668205597032448": {
-    "value": 26930.503223896027,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "daily_img_cd_186860864219906048": {
-    "value": 28438.19725751877,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "daily_img_cd_239072925137895424": {
-    "value": 28607.927337408066,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "daily_img_cd_598362608944545802": {
-    "value": 28764.19582605362,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "daily_img_cd_616985004257312825": {
-    "value": 29037.614525079727,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
-  "kringpic_img_cd_616985004257312825": {
-    "value": 0,
-    "time_based": true,
-    "saved_at": 1743668993.643019
-  },
   "daily_img_cd_250264560554999808": {
-    "value": 33602.21196103096,
+    "value": 32688.813593387604,
     "time_based": true,
-    "saved_at": 1743668993.643019
+    "saved_at": 1743669620.9754324
+  },
+  "daily_img_cd_170479538151751682": {
+    "value": 0,
+    "time_based": true,
+    "saved_at": 1743669620.9754324
   },
   "kringpic_img_cd_250264560554999808": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743668993.643019
+    "saved_at": 1743669620.9754324
   },
-  "kringpic_img_cd_140301928486797313": {
+  "no_cd_kringpic_250264560554999808": {
+    "value": false,
+    "time_based": false,
+    "saved_at": null
+  },
+  "kringpic_img_cd_170479538151751682": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743668993.643019
+    "saved_at": 1743669620.9754324
+  },
+  "512550572864307222_deleted": {
+    "value": [
+      [
+        1355001773894668451,
+        "\u2705 No recently deleted messages found for **Kringbot**.",
+        "kringbot-spam",
+        1743669639.16,
+        1743669645.3011491
+      ]
+    ],
+    "time_based": false,
+    "saved_at": null
+  },
+  "512550572864307222_edited": {
+    "value": [],
+    "time_based": false,
+    "saved_at": null
   }
 }

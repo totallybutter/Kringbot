@@ -138,18 +138,13 @@ class MessageManager(commands.Cog):
     async def show_deleted(
         self,
         ctx: discord.ApplicationContext,
-        user_name: discord.Option(str, description="Display name to search for")
+        member: discord.Option(discord.Member, description="Select a member")
     ):
         try:
             await ctx.defer()
-            user = discord.utils.find(lambda m: user_name.lower() in m.display_name.lower(), ctx.guild.members)
-            if not user:
-                await ctx.respond(f"❌ No user found matching '{user_name}'.")
-                return
-            
-            deleted = self.recent_deletes.get(user.id)
+            deleted = self.recent_deletes.get(member.id)
             if not deleted:
-                await ctx.respond(f"✅ No recently deleted messages found for **{user.display_name}**.")
+                await ctx.respond(f"✅ No recently deleted messages found for **{member.display_name}**.")
                 return
 
             pages = []
@@ -167,7 +162,7 @@ class MessageManager(commands.Cog):
                     )
                 pages.append("\n\n".join(lines))
 
-            await self.show_deleted_pages(ctx, pages, user.display_name)
+            await self.show_deleted_pages(ctx, pages, member.display_name)
         except discord.errors.NotFound:
             print("❌ Interaction expired before response could be sent.")
         except Exception as e:
@@ -197,19 +192,14 @@ class MessageManager(commands.Cog):
     async def show_edited(
         self,
         ctx: discord.ApplicationContext,
-        user_name: discord.Option(str, description="Display name to search for")
+        member: discord.Option(discord.Member, description="Select a member")
     ):
         try:
             await ctx.defer()
 
-            user = discord.utils.find(lambda m: user_name.lower() in m.display_name.lower(), ctx.guild.members)
-            if not user:
-                await ctx.respond(f"❌ No user found matching '{user_name}'.")
-                return
-
-            edits = self.recent_edits.get(user.id)
+            edits = self.recent_edits.get(member.id)
             if not edits:
-                await ctx.respond(f"✅ No recent edits found for **{user.display_name}**.")
+                await ctx.respond(f"✅ No recent edits found for **{member.display_name}**.")
                 return
 
             pages = []
@@ -221,7 +211,7 @@ class MessageManager(commands.Cog):
                     lines.append(f"`{edit}`")
                 pages.append("\n".join(lines))
 
-            await self.show_edit_pages(ctx, pages, user.display_name)
+            await self.show_edit_pages(ctx, pages, member.display_name)
         except discord.errors.NotFound:
             print("❌ Interaction expired before response could be sent.")
         except Exception as e:
@@ -289,22 +279,17 @@ class MessageManager(commands.Cog):
     async def purge_deleted(
         self,
         ctx: discord.ApplicationContext,
-        user_name: discord.Option(str, description="Display name to purge")
+        member: discord.Option(discord.Member, description="Select a member")
     ):
         try:
             await ctx.defer(ephemeral=True)
 
-            user = discord.utils.find(lambda m: user_name.lower() in m.display_name.lower(), ctx.guild.members)
-            if not user:
-                await ctx.respond(f"❌ No user found matching '{user_name}'.")
-                return
-
-            if user.id in self.recent_deletes:
-                del self.recent_deletes[user.id]
+            if member.id in self.recent_deletes:
+                del self.recent_deletes[member.id]
                 self._sync_logs_to_prefs(ctx.guild.id)
-                await ctx.respond(f"🗑️ Deleted message log purged for **{user.display_name}**.")
+                await ctx.respond(f"🗑️ Deleted message log purged for **{member.display_name}**.")
             else:
-                await ctx.respond(f"ℹ️ No deleted messages were logged for **{user.display_name}**.")
+                await ctx.respond(f"ℹ️ No deleted messages were logged for **{member.display_name}**.")
         except discord.errors.NotFound:
             print("❌ Interaction expired before response could be sent.")
         except Exception as e:
@@ -320,22 +305,17 @@ class MessageManager(commands.Cog):
     async def purge_edited(
         self,
         ctx: discord.ApplicationContext,
-        user_name: discord.Option(str, description="Display name to purge")
+        member: discord.Option(discord.Member, description="Select a member")
     ):
         try:
             await ctx.defer(ephemeral=True)
 
-            user = discord.utils.find(lambda m: user_name.lower() in m.display_name.lower(), ctx.guild.members)
-            if not user:
-                await ctx.respond(f"❌ No user found matching '{user_name}'.")
-                return
-
-            if user.id in self.recent_edits:
-                del self.recent_edits[user.id]
+            if member.id in self.recent_edits:
+                del self.recent_edits[member.id]
                 self._sync_logs_to_prefs(ctx.guild.id)
-                await ctx.respond(f"✏️ Edited message log purged for **{user.display_name}**.")
+                await ctx.respond(f"✏️ Edited message log purged for **{member.display_name}**.")
             else:
-                await ctx.respond(f"ℹ️ No edited messages were logged for **{user.display_name}**.")
+                await ctx.respond(f"ℹ️ No edited messages were logged for **{member.display_name}**.")
         except discord.errors.NotFound:
             print("❌ Interaction expired before response could be sent.")
         except Exception as e:
