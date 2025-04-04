@@ -214,6 +214,30 @@ class TokenCog(commands.Cog):
         )
         await ctx.respond(embed=embed, view=view)
 
+    #####################
+    # Black Jack with Kringles
+    #####################
+    @ktokengrp.command(name="blackjack", description="Play blackjack with ktokens!")
+    async def blackjack(
+    self,
+    ctx: discord.ApplicationContext,
+    bet: Option(int, description="How many tokens to bet", min_value=1)
+    ):
+    user_id = ctx.author.id
+    current_balance = self.get_balance(user_id)
+    if bet > current_balance:
+        return await ctx.respond(
+            f"❌ You only have {current_balance} tokens, but you tried to bet {bet}.",
+            ephemeral=True
+        )
+
+    # Deduct the bet up front
+    self.set_balance(user_id, current_balance - bet)
+
+    # Start the blackjack game
+    view = BlackjackView(self, ctx.author, bet)
+    await view.start(ctx)
+
 
 class DiceBetView(discord.ui.View):
     """
@@ -348,6 +372,125 @@ class DiceBetView(discord.ui.View):
         # update the original message
         await interaction.response.edit_message(content=result, embed=None, view=self)
     
+class BlackjackView(discord.ui.View):
+    def __init__(self, token_cog, player, bet_amount):
+        super().__init__(timeout=120)
+        self.token_cog = token_cog
+        self.player = player
+        self.bet = bet_amount
+
+        # Hands
+        self.player_hand = []
+        self.dealer_hand = []
+
+        self.message = None
+        self.finished = False
+
+    async def start(self, ctx):
+        # Deal initial cards
+        self.deck = self.generate_deck()
+        random.shuffle(self.deck)
+
+        self.player_hand = [self.deck.pop(), self.deck.pop()]
+        self.dealer_hand = [self.deck.pop(), self.deck.pop()]
+
+        embed = self.build_embed(initial=True)
+        self.message = await ctx.respond(embed=embed, view=self)
+
+    def generate_deck(self):
+        return [r + s for r in "23456789TJQKA" for s in "♠♥♦♣"]
+
+    def hand_value(self, hand):
+        value, aces = 0, 0
+        for card in hand:
+            rank = card[0]
+            if rank in "JQKT":
+                value += 10
+            elif rank == "A":
+                value += 11
+                aces += 1
+            else:
+                value += int(rank)
+
+        # Adjust for Aces
+        while value > 21 and aces:
+            value -= 10
+            aces -= 1
+        return value
+
+    def build_embed(self, initial=False, reveal_dealer=False):
+        pval = self.hand_value(self.player_hand)
+        dval = self.hand_value(self.dealer_hand if reveal_dealer else [self.dealer_hand[0]])
+
+        desc = f"**Your hand** ({pval}): {', '.join(self.player_hand)}\n"
+        if reveal_dealer:
+            desc += f"**Dealer hand** ({dval}): {', '.join(self.dealer_hand)}"
+        else:
+            desc += f"**Dealer hand** (?): {self.dealer_hand[0]}, ??"
+
+        embed = discord.Embed(title="🃏 Blackjack", description=desc)
+
+        if self.finished:
+            embed.color = discord.Color.gold()
+        else:
+            embed.color = discord.Color.blue()
+
+        return embed
+
+    async def end_game(self, interaction):
+        self.disable_all_buttons()
+        self.finished = True
+
+        player_val = self.hand_value(self.player_hand)
+        dealer_val = self.hand_value(self.dealer_hand)
+
+        # Dealer hits until 17+
+        while dealer_val < 17:
+            self.dealer_hand.append(self.deck.pop())
+            dealer_val = self.hand_value(self.dealer_hand)
+
+        result = ""
+        payout = 0
+
+        if player_val > 21:
+            result = f"💥 You bust! Lose {self.bet} tokens."
+        elif dealer_val > 21 or player_val > dealer_val:
+            if player_val == 21 and len(self.player_hand) == 2:
+                payout = int(self.bet * 1.5)
+                result = f"🂡 Blackjack! You win {payout} tokens!"
+            else:
+                payout = self.bet * 2
+                result = f"✅ You win! Earned {self.bet} tokens."
+        elif player_val == dealer_val:
+            payout = self.bet
+            result = "🤝 It's a tie! Your bet is returned."
+        else:
+            result = f"❌ Dealer wins. You lost {self.bet} tokens."
+
+        # Update balance
+        self.token_cog.set_balance(self.player.id, self.token_cog.get_balance(self.player.id) + payout)
+
+        embed = self.build_embed(reveal_dealer=True)
+        embed.add_field(name="Result", value=result, inline=False)
+
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    def disable_all_buttons(self):
+        for item in self.children:
+            item.disabled = True
+
+    @discord.ui.button(label="Hit", style=discord.ButtonStyle.success)
+    async def hit_button(self, button, interaction: discord.Interaction):
+        self.player_hand.append(self.deck.pop())
+        if self.hand_value(self.player_hand) > 21:
+            await self.end_game(interaction)
+        else:
+            await interaction.response.edit_message(embed=self.build_embed(), view=self)
+
+    @discord.ui.button(label="Stand", style=discord.ButtonStyle.danger)
+    async def stand_button(self, button, interaction: discord.Interaction):
+        await self.end_game(interaction)
+
 
 def setup(bot):
     bot.add_cog(TokenCog(bot))
