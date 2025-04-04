@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.commands import slash_command, Option
 from discord.ui import View, Button
 
-BOT_VERSION = "1.1.1"
+BOT_VERSION = "1.2.1"
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
@@ -60,6 +60,10 @@ class HelpCog(commands.Cog):
         seen = set()
         unique_commands = []
         for cmd in self.bot.application_commands:
+            if isinstance(cmd, discord.SlashCommandGroup):
+                unique_commands.append(cmd)
+                seen.add(cmd.name)
+                continue
             # hiddenattr = getattr(cmd.callback, "hidden", False)
             # print(f"{cmd} is hidden? {hiddenattr}")
             if getattr(cmd.callback, "hidden", False):

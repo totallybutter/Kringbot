@@ -19,6 +19,7 @@ bot.load_extension("cogs.kb_ask_cog")       # Load AskCog
 bot.load_extension("cogs.kb_img_cog")       # Load ImgCog
 bot.load_extension("cogs.kb_help_cog")      # Load HelpCog
 bot.load_extension("cogs.kb_msgman_cog")    # Load MessageManager
+bot.load_extension("cogs.kb_token_cog")     # Load Token Game Cog
 
 @bot.event
 async def on_ready():

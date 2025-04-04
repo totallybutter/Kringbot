@@ -1,18 +1,18 @@
 {
   "daily_img_cd_250264560554999808": {
-    "value": 42237.43871617317,
+    "value": 13207.736404418945,
     "time_based": true,
-    "saved_at": 1743732133.9593399
+    "saved_at": 1743761163.6616516
   },
   "daily_img_cd_170479538151751682": {
-    "value": 0,
+    "value": 15357.133522987366,
     "time_based": true,
-    "saved_at": 1743732133.9593399
+    "saved_at": 1743761163.6616516
   },
   "kringpic_img_cd_250264560554999808": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743732133.9593399
+    "saved_at": 1743761163.6616516
   },
   "no_cd_kringpic_250264560554999808": {
     "value": false,
@@ -22,10 +22,24 @@
   "kringpic_img_cd_170479538151751682": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743732133.9593399
+    "saved_at": 1743761163.6616516
   },
   "512550572864307222_deleted": {
     "value": [
+      [
+        1355001773894668451,
+        "**corin's chainsaw cleaner asks**: test\n**Kringbot says**: This is a successful test response. Use /status for more information",
+        "kringbot-spam",
+        1743732377.363,
+        1743732477.3715103
+      ],
+      [
+        1355001773894668451,
+        "**corin's chainsaw cleaner asks**: test\n**Kringbot says**: This is a successful test response. Use /status for more information. ^w^!",
+        "kringbot-spam",
+        1743732409.065,
+        1743732474.6548688
+      ],
       [
         1355001773894668451,
         "**corin's chainsaw cleaner asks**: test\n**Kringbot says**: This is a successful test response. Use /status for more information",
@@ -67,6 +81,13 @@
         "kringbot-spam",
         1743731406.009,
         1743731454.708638
+      ],
+      [
+        598362608944545802,
+        "see i told yall no diff",
+        "digipen-state-of-mind",
+        1743751538.218,
+        1743751917.115986
       ]
     ],
     "time_based": false,
@@ -85,14 +106,70 @@
             "<@250264560554999808> presentation finish already?"
           ]
         ]
+      ],
+      [
+        598362608944545802,
+        1357620144372715562,
+        "digipen-state-of-mind",
+        "ukr",
+        [
+          [
+            1743752269.778863,
+            "ikr"
+          ]
+        ]
+      ],
+      [
+        239072925137895424,
+        1357642333520265340,
+        "digipen-state-of-mind",
+        "at least you didnt lose 500 dollars of hair washing",
+        [
+          [
+            1743757569.4101393,
+            "at least you didnt lose 500 dollars to hair washing"
+          ]
+        ]
+      ],
+      [
+        239072925137895424,
+        1357622838781149256,
+        "random",
+        "that one right is literally not because you cannot tah han the police and the tanks, but more like you want to move on to the next one",
+        [
+          [
+            1743752933.6126037,
+            "that one right is literally not because you cannot tah han the police and the tanks, but more like you play until sian then want to move on"
+          ]
+        ]
       ]
     ],
     "time_based": false,
     "saved_at": null
   },
   "daily_img_cd_217668205597032448": {
-    "value": 42329.14099788666,
+    "value": 13299.438686132431,
     "time_based": true,
-    "saved_at": 1743732133.9593399
+    "saved_at": 1743761163.6616516
+  },
+  "daily_img_cd_239072925137895424": {
+    "value": 32755.84466433525,
+    "time_based": true,
+    "saved_at": 1743761163.6616516
+  },
+  "daily_img_cd_332920035066511362": {
+    "value": 37737.85565853119,
+    "time_based": true,
+    "saved_at": 1743761163.6616516
+  },
+  "ktoken_balance_250264560554999808": {
+    "value": 2101,
+    "time_based": false,
+    "saved_at": null
+  },
+  "ktoken_claim_cd_250264560554999808": {
+    "value": 1623.415682554245,
+    "time_based": true,
+    "saved_at": 1743761163.6616516
   }
 }
