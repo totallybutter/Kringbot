@@ -1,18 +1,18 @@
 {
   "daily_img_cd_250264560554999808": {
-    "value": 32688.813593387604,
+    "value": 42237.43871617317,
     "time_based": true,
-    "saved_at": 1743669620.9754324
+    "saved_at": 1743732133.9593399
   },
   "daily_img_cd_170479538151751682": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743669620.9754324
+    "saved_at": 1743732133.9593399
   },
   "kringpic_img_cd_250264560554999808": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743669620.9754324
+    "saved_at": 1743732133.9593399
   },
   "no_cd_kringpic_250264560554999808": {
     "value": false,
@@ -22,24 +22,77 @@
   "kringpic_img_cd_170479538151751682": {
     "value": 0,
     "time_based": true,
-    "saved_at": 1743669620.9754324
+    "saved_at": 1743732133.9593399
   },
   "512550572864307222_deleted": {
     "value": [
+      [
+        1355001773894668451,
+        "**corin's chainsaw cleaner asks**: test\n**Kringbot says**: This is a successful test response. Use /status for more information",
+        "kringbot-spam",
+        1743732008.408,
+        1743732014.6884024
+      ],
+      [
+        1355001773894668451,
+        "**corin's chainsaw cleaner asks**: big test energy\n**Kringbot says**: This is a successful test response. Use /status for more information",
+        "kringbot-spam",
+        1743731725.018,
+        1743731751.515999
+      ],
+      [
+        1355001773894668451,
+        "**corin's chainsaw cleaner asks**: please wish me a good presentation\n**Kringbot says**: hmmm... lemme think about this....",
+        "kringbot-spam",
+        1743731740.031,
+        1743731746.3688073
+      ],
+      [
+        1355001773894668451,
+        "**hu tao is eternal hahaha asks**: please wish your owner a good presentation\n**Kringbot says**: hmmm... lemme think about this....",
+        "kringbot-spam",
+        1743731601.485,
+        1743731605.165916
+      ],
       [
         1355001773894668451,
         "\u2705 No recently deleted messages found for **Kringbot**.",
         "kringbot-spam",
         1743669639.16,
         1743669645.3011491
+      ],
+      [
+        250264560554999808,
+        "./help",
+        "kringbot-spam",
+        1743731406.009,
+        1743731454.708638
       ]
     ],
     "time_based": false,
     "saved_at": null
   },
   "512550572864307222_edited": {
-    "value": [],
+    "value": [
+      [
+        217668205597032448,
+        1357532008728756364,
+        "kringbot-spam",
+        "<@250264560554999808> presenttaion finish already?",
+        [
+          [
+            1743731258.8517325,
+            "<@250264560554999808> presentation finish already?"
+          ]
+        ]
+      ]
+    ],
     "time_based": false,
     "saved_at": null
+  },
+  "daily_img_cd_217668205597032448": {
+    "value": 42329.14099788666,
+    "time_based": true,
+    "saved_at": 1743732133.9593399
   }
 }

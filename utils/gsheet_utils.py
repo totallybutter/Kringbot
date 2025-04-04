@@ -29,8 +29,8 @@ def load_generic_table(sheet_name: str, tab_name: str, num_key_columns: int = 1,
     """Load a table from any sheet and tab dynamically."""
     # If it's already cached, return it.
     cache_key = f"{sheet_name}:{tab_name}"
-    if cache_key in _sheet_cache and _sheet_cache[cache_key]:
-        return _sheet_cache[cache_key]
+    # if cache_key in _sheet_cache and _sheet_cache[cache_key]:
+    #     return _sheet_cache[cache_key]
 
     # If not cached, load from the sheet.
     worksheet = _load_from_sheet(sheet_name, tab_name)

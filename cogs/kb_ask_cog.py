@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from utils import gsheet_utils
 from utils.ask_utils import categorize_question, load_specified_ask_sheet, load_all_ask_sheets, get_responses_for_role, get_substring_response
 
-REFRESH_ASK_COOLDOWN_SECONDS = 120
+REFRESH_ASK_COOLDOWN_SECONDS = 60
 
 class AskCog(commands.Cog):
     def __init__(self, bot):
